@@ -7,45 +7,48 @@ import time
 from collections import defaultdict
 from flask import Flask, request, jsonify, send_from_directory, make_response
 
+# Try importing pymongo for MongoDB Atlas support
+try:
+    from pymongo import MongoClient
+    from pymongo.errors import PyMongoError
+    HAS_PYMONGO = True
+except ImportError:
+    HAS_PYMONGO = False
+
 app = Flask(__name__)
 
 # --- SECURITY: Max payload limit ---
 # Limit request body sizes to 1MB to prevent Denial of Service (DoS) attacks
 app.config['MAX_CONTENT_LENGTH'] = 1 * 1024 * 1024
 
-# Configurable SQLite database path
+# Database Configuration
+MONGO_URI = os.environ.get('MONGO_URI')
 DATABASE_PATH = os.environ.get('DATABASE_PATH', 'portfolio.db')
 
-# --- SECURITY: In-memory Rate Limiter ---
-# Tracks client requests to prevent spamming the contact form
-# Structure: {ip_address: [timestamp1, timestamp2, ...]}
-submission_tracker = defaultdict(list)
-RATE_LIMIT_WINDOW = 900  # 15 minutes in seconds
-MAX_SUBMISSIONS = 5      # Max 5 submissions allowed per window
+# Detect if we should use MongoDB Atlas or fallback to SQLite
+USE_MONGODB = HAS_PYMONGO and MONGO_URI is not None
 
-def is_rate_limited(ip):
-    now = time.time()
-    # Retain only timestamps within the current active window
-    submission_tracker[ip] = [t for t in submission_tracker[ip] if now - t < RATE_LIMIT_WINDOW]
-    if len(submission_tracker[ip]) >= MAX_SUBMISSIONS:
-        return True
-    submission_tracker[ip].append(now)
-    return False
+mongo_client = None
+db = None
 
-def get_db():
+if USE_MONGODB:
+    try:
+        # Connect to MongoDB Atlas (database: portfolio_db)
+        mongo_client = MongoClient(MONGO_URI)
+        db = mongo_client['portfolio_db']
+        print("Connected successfully to MongoDB Atlas!")
+    except Exception as e:
+        print(f"Failed to connect to MongoDB Atlas, falling back to SQLite: {e}")
+        USE_MONGODB = False
+
+# --- Fallback SQLite Database Initializer ---
+def init_sqlite_db():
     db_dir = os.path.dirname(DATABASE_PATH)
     if db_dir and not os.path.exists(db_dir):
         os.makedirs(db_dir, exist_ok=True)
     
     conn = sqlite3.connect(DATABASE_PATH)
-    conn.row_factory = sqlite3.Row
-    return conn
-
-def init_db():
-    conn = get_db()
     cursor = conn.cursor()
-    
-    # Table for tracking visitor actions and sessions
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS visitors (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -57,8 +60,6 @@ def init_db():
             visit_count INTEGER DEFAULT 1
         )
     ''')
-    
-    # Table for storing contact form messages
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS messages (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -73,21 +74,112 @@ def init_db():
     conn.commit()
     conn.close()
 
-# Initialize tables at startup
-init_db()
+if not USE_MONGODB:
+    init_sqlite_db()
+
+# --- SECURITY: In-memory Rate Limiter ---
+submission_tracker = defaultdict(list)
+RATE_LIMIT_WINDOW = 900  # 15 minutes in seconds
+MAX_SUBMISSIONS = 5      # Max 5 submissions allowed per window
+
+def is_rate_limited(ip):
+    now = time.time()
+    submission_tracker[ip] = [t for t in submission_tracker[ip] if now - t < RATE_LIMIT_WINDOW]
+    if len(submission_tracker[ip]) >= MAX_SUBMISSIONS:
+        return True
+    submission_tracker[ip].append(now)
+    return False
+
+# --- Database Abstract Actions ---
+def log_visitor(visitor_uuid, user_agent, ip_address):
+    if USE_MONGODB:
+        try:
+            now = time.strftime('%Y-%m-%d %H:%M:%S')
+            visitor = db.visitors.find_one({'visitor_uuid': visitor_uuid})
+            if visitor:
+                db.visitors.update_one(
+                    {'visitor_uuid': visitor_uuid},
+                    {
+                        '$set': {
+                            'last_visit': now,
+                            'ip_address': ip_address,
+                            'user_agent': user_agent
+                        },
+                        '$inc': {'visit_count': 1}
+                    }
+                )
+            else:
+                db.visitors.insert_one({
+                    'visitor_uuid': visitor_uuid,
+                    'user_agent': user_agent,
+                    'ip_address': ip_address,
+                    'first_visit': now,
+                    'last_visit': now,
+                    'visit_count': 1
+                })
+        except PyMongoError as e:
+            print(f"MongoDB tracking error: {e}")
+    else:
+        conn = sqlite3.connect(DATABASE_PATH)
+        cursor = conn.cursor()
+        try:
+            cursor.execute('SELECT id FROM visitors WHERE visitor_uuid = ?', (visitor_uuid,))
+            if cursor.fetchone():
+                cursor.execute('''
+                    UPDATE visitors
+                    SET last_visit = CURRENT_TIMESTAMP, visit_count = visit_count + 1, ip_address = ?, user_agent = ?
+                    WHERE visitor_uuid = ?
+                ''', (ip_address, user_agent, visitor_uuid))
+            else:
+                cursor.execute('''
+                    INSERT INTO visitors (visitor_uuid, user_agent, ip_address)
+                    VALUES (?, ?, ?)
+                ''', (visitor_uuid, user_agent, ip_address))
+            conn.commit()
+        except sqlite3.Error as e:
+            print(f"SQLite tracking error: {e}")
+        finally:
+            conn.close()
+
+def save_message(visitor_uuid, name, email, subject, message):
+    if USE_MONGODB:
+        try:
+            db.messages.insert_one({
+                'visitor_uuid': visitor_uuid,
+                'name': name,
+                'email': email,
+                'subject': subject,
+                'message': message,
+                'timestamp': time.strftime('%Y-%m-%d %H:%M:%S')
+            })
+            return True, None
+        except PyMongoError as e:
+            return False, str(e)
+    else:
+        conn = sqlite3.connect(DATABASE_PATH)
+        cursor = conn.cursor()
+        success = False
+        error = None
+        try:
+            cursor.execute('''
+                INSERT INTO messages (visitor_uuid, name, email, subject, message)
+                VALUES (?, ?, ?, ?, ?)
+            ''', (visitor_uuid, name, email, subject, message))
+            conn.commit()
+            success = True
+        except sqlite3.Error as e:
+            error = str(e)
+        finally:
+            conn.close()
+        return success, error
 
 # --- SECURITY: HTTP Headers Middleware ---
 @app.after_request
 def add_security_headers(response):
-    # Prevent stylesheet/script MIME sniffing attacks
     response.headers['X-Content-Type-Options'] = 'nosniff'
-    # Prevent site from being embedded in iframes (prevents Clickjacking)
     response.headers['X-Frame-Options'] = 'DENY'
-    # Enable browser-level cross-site scripting (XSS) filter
     response.headers['X-XSS-Protection'] = '1; mode=block'
-    # Control how much referrer information is passed to external sites
     response.headers['Referrer-Policy'] = 'strict-origin-when-cross-origin'
-    # Strict Content Security Policy (CSP) - limits assets to self, google fonts, etc.
     response.headers['Content-Security-Policy'] = (
         "default-src 'self'; "
         "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
@@ -103,10 +195,9 @@ def index():
     visitor_uuid = request.cookies.get('visitor_uuid')
     is_new = False
     
-    # --- SECURITY: Validate visitor cookie format to prevent tampering ---
     uuid_regex = r'^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$'
     if visitor_uuid and not re.match(uuid_regex, visitor_uuid):
-        visitor_uuid = None  # Reset tampered cookie
+        visitor_uuid = None
         
     if not visitor_uuid:
         visitor_uuid = str(uuid.uuid4())
@@ -115,52 +206,21 @@ def index():
     user_agent = request.headers.get('User-Agent', '')
     ip_address = request.remote_addr
     
-    # Extract proxy forwarding headers safely
     if request.headers.get('X-Forwarded-For'):
         ip_address = request.headers.get('X-Forwarded-For').split(',')[0].strip()
         
-    conn = get_db()
-    cursor = conn.cursor()
-    try:
-        if is_new:
-            # Safe parameterized injection
-            cursor.execute('''
-                INSERT INTO visitors (visitor_uuid, user_agent, ip_address)
-                VALUES (?, ?, ?)
-            ''', (visitor_uuid, user_agent, ip_address))
-        else:
-            # Check if this uuid is in db (in case database was reset but cookie remained)
-            cursor.execute('SELECT id FROM visitors WHERE visitor_uuid = ?', (visitor_uuid,))
-            if cursor.fetchone():
-                cursor.execute('''
-                    UPDATE visitors
-                    SET last_visit = CURRENT_TIMESTAMP, visit_count = visit_count + 1, ip_address = ?, user_agent = ?
-                    WHERE visitor_uuid = ?
-                ''', (ip_address, user_agent, visitor_uuid))
-            else:
-                cursor.execute('''
-                    INSERT INTO visitors (visitor_uuid, user_agent, ip_address)
-                    VALUES (?, ?, ?)
-                ''', (visitor_uuid, user_agent, ip_address))
-        conn.commit()
-    except sqlite3.Error as e:
-        print(f"Database error tracking visitor: {e}")
-    finally:
-        conn.close()
+    log_visitor(visitor_uuid, user_agent, ip_address)
         
     response = make_response(send_from_directory('.', 'index.html'))
-    
-    # Determine if request is HTTPS to set Secure flag
     is_https = request.is_secure or request.headers.get('X-Forwarded-Proto', '').lower() == 'https'
     
-    # --- SECURITY: Set secure HTTP-only cookies ---
     response.set_cookie(
         'visitor_uuid',
         visitor_uuid,
         max_age=31536000,
-        httponly=True,  # Restricts client-side JS from reading cookie
-        secure=is_https, # Transmit only over HTTPS in production
-        samesite='Lax'   # Defends against Cross-Site Request Forgery (CSRF)
+        httponly=True,
+        secure=is_https,
+        samesite='Lax'
     )
     return response
 
@@ -178,12 +238,10 @@ def serve_resume():
 
 @app.route('/api/contact', methods=['POST'])
 def contact():
-    # Fetch client IP safely
     ip_address = request.remote_addr
     if request.headers.get('X-Forwarded-For'):
         ip_address = request.headers.get('X-Forwarded-For').split(',')[0].strip()
 
-    # --- SECURITY: Rate Limiting validation ---
     if is_rate_limited(ip_address):
         return jsonify({
             'success': False, 
@@ -192,7 +250,6 @@ def contact():
 
     visitor_uuid = request.cookies.get('visitor_uuid')
     
-    # --- SECURITY: Validate visitor cookie format ---
     uuid_regex = r'^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$'
     if visitor_uuid and not re.match(uuid_regex, visitor_uuid):
         visitor_uuid = "tampered-cookie-blocked"
@@ -201,7 +258,6 @@ def contact():
     if not data:
         return jsonify({'success': False, 'error': 'No data provided'}), 400
         
-    # --- SECURITY: Input Sanitization (protects against XSS) ---
     name = html.escape(data.get('name', '').strip())
     email = html.escape(data.get('email', '').strip())
     subject = html.escape(data.get('subject', '').strip())
@@ -210,29 +266,11 @@ def contact():
     if not name or not email or not message:
         return jsonify({'success': False, 'error': 'Name, Email, and Message are required'}), 400
 
-    # --- SECURITY: Validate Email Format ---
     email_regex = r'^[\w\.-]+@[\w\.-]+\.\w+$'
     if not re.match(email_regex, email):
         return jsonify({'success': False, 'error': 'Invalid email address format'}), 400
         
-    conn = get_db()
-    cursor = conn.cursor()
-    success = False
-    error = None
-    
-    try:
-        # --- SECURITY: Parameterized Query protects against SQL Injection ---
-        cursor.execute('''
-            INSERT INTO messages (visitor_uuid, name, email, subject, message)
-            VALUES (?, ?, ?, ?, ?)
-        ''', (visitor_uuid, name, email, subject, message))
-        conn.commit()
-        success = True
-    except sqlite3.Error as e:
-        error = str(e)
-        print(f"Database error saving message: {e}")
-    finally:
-        conn.close()
+    success, error = save_message(visitor_uuid, name, email, subject, message)
         
     # --- Forward message to user's email via FormSubmit.co in the backend ---
     if success:
@@ -258,21 +296,17 @@ def contact():
                     'User-Agent': 'Mozilla/5.0'
                 }
             )
-            # Timeout set to 8 seconds to prevent hanging the request
             with urllib.request.urlopen(req, timeout=8) as f_res:
                 print(f"Backend email forward status: {f_res.status}")
         except Exception as e:
-            # We don't return an error to the frontend if email forwarding fails (e.g. timeout),
-            # since the message has been securely saved in the SQLite database and can be retrieved!
             print(f"Warning: Failed to forward message to FormSubmit.co: {e}")
 
     if success:
         return jsonify({'success': True, 'message': 'Message saved successfully!'})
     else:
-        return jsonify({'success': False, 'error': 'Internal server error'}), 500
+        return jsonify({'success': False, 'error': 'Internal database error'}), 500
 
 if __name__ == '__main__':
-    # production hosting on Render disables debug mode
     debug_mode = os.environ.get('FLASK_DEBUG', 'False').lower() in ('true', '1')
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port, debug=debug_mode)
