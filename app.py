@@ -28,53 +28,79 @@ DATABASE_PATH = os.environ.get('DATABASE_PATH', 'portfolio.db')
 # Detect if we should use MongoDB Atlas or fallback to SQLite
 USE_MONGODB = HAS_PYMONGO and MONGO_URI is not None
 
+# --- Fallback SQLite Database Initializer with directory safety ---
+def init_sqlite_db():
+    global DATABASE_PATH
+    try:
+        db_dir = os.path.dirname(DATABASE_PATH)
+        if db_dir and not os.path.exists(db_dir):
+            os.makedirs(db_dir, exist_ok=True)
+    except Exception as e:
+        # Handles Render container permission errors (e.g., trying to write to root /data without mounted disk)
+        print(f"Warning: Failed to create database directory {db_dir}: {e}. Falling back to local directory.")
+        DATABASE_PATH = 'portfolio.db'
+
+    try:
+        conn = sqlite3.connect(DATABASE_PATH)
+        cursor = conn.cursor()
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS visitors (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                visitor_uuid TEXT UNIQUE,
+                user_agent TEXT,
+                ip_address TEXT,
+                first_visit TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                last_visit TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                visit_count INTEGER DEFAULT 1
+            )
+        ''')
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS messages (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                visitor_uuid TEXT,
+                name TEXT,
+                email TEXT,
+                subject TEXT,
+                message TEXT,
+                timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        ''')
+        conn.commit()
+        conn.close()
+    except Exception as sq_err:
+        print(f"Critical error initializing SQLite database: {sq_err}")
+
+# Safe connection getter for SQLite
+def get_sqlite_conn():
+    global DATABASE_PATH
+    try:
+        conn = sqlite3.connect(DATABASE_PATH)
+        conn.row_factory = sqlite3.Row
+        return conn
+    except Exception as e:
+        print(f"Failed to open SQLite database: {e}. Attempting local fallback.")
+        DATABASE_PATH = 'portfolio.db'
+        return sqlite3.connect(DATABASE_PATH)
+
 mongo_client = None
 db = None
 
 if USE_MONGODB:
     try:
         # Connect to MongoDB Atlas (database: portfolio_db)
-        mongo_client = MongoClient(MONGO_URI)
+        # Timeout connection attempt quickly (5 seconds) to prevent hanging the server during startup
+        mongo_client = MongoClient(MONGO_URI, serverSelectionTimeoutMS=5000)
         db = mongo_client['portfolio_db']
+        
+        # Perform a quick Ping command to check if connection string/credentials and network match
+        mongo_client.admin.command('ping')
         print("Connected successfully to MongoDB Atlas!")
     except Exception as e:
+        # Fallback to local SQLite if MongoDB credentials are incorrect or if IP access is blocked
         print(f"Failed to connect to MongoDB Atlas, falling back to SQLite: {e}")
         USE_MONGODB = False
-
-# --- Fallback SQLite Database Initializer ---
-def init_sqlite_db():
-    db_dir = os.path.dirname(DATABASE_PATH)
-    if db_dir and not os.path.exists(db_dir):
-        os.makedirs(db_dir, exist_ok=True)
-    
-    conn = sqlite3.connect(DATABASE_PATH)
-    cursor = conn.cursor()
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS visitors (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            visitor_uuid TEXT UNIQUE,
-            user_agent TEXT,
-            ip_address TEXT,
-            first_visit TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            last_visit TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            visit_count INTEGER DEFAULT 1
-        )
-    ''')
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS messages (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            visitor_uuid TEXT,
-            name TEXT,
-            email TEXT,
-            subject TEXT,
-            message TEXT,
-            timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        )
-    ''')
-    conn.commit()
-    conn.close()
-
-if not USE_MONGODB:
+        init_sqlite_db()
+else:
     init_sqlite_db()
 
 # --- SECURITY: In-memory Rate Limiter ---
@@ -120,7 +146,7 @@ def log_visitor(visitor_uuid, user_agent, ip_address):
         except PyMongoError as e:
             print(f"MongoDB tracking error: {e}")
     else:
-        conn = sqlite3.connect(DATABASE_PATH)
+        conn = get_sqlite_conn()
         cursor = conn.cursor()
         try:
             cursor.execute('SELECT id FROM visitors WHERE visitor_uuid = ?', (visitor_uuid,))
@@ -156,7 +182,7 @@ def save_message(visitor_uuid, name, email, subject, message):
         except PyMongoError as e:
             return False, str(e)
     else:
-        conn = sqlite3.connect(DATABASE_PATH)
+        conn = get_sqlite_conn()
         cursor = conn.cursor()
         success = False
         error = None
