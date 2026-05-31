@@ -10,10 +10,17 @@
   <meta property="og:description" content="Building intelligent systems that bridge the gap between data and decisions." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Syne:wght@700;800&family=Montserrat:wght@300;400;500;700;900&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
+  
+  <!-- Custom Cursor -->
+  <div class="cursor-dot"></div>
+
+  <!-- Immersive Canvas Background -->
+  <canvas id="fresco-canvas"></canvas>
+  <div class="fresco-overlay"></div>
 
   <!-- Particle Canvas -->
   <canvas id="particles-canvas"></canvas>
@@ -21,7 +28,7 @@
   <!-- Navigation -->
   <nav id="navbar">
     <div class="nav-container">
-      <a href="#home" class="nav-logo" id="nav-logo">MK<span class="accent">.</span></a>
+      <a href="#home" class="nav-logo" id="nav-logo">MKP<span class="accent">.</span></a>
       <ul class="nav-links" id="nav-links">
         <li><a href="#about" class="nav-link">About</a></li>
         <li><a href="#skills" class="nav-link">Skills</a></li>
@@ -49,71 +56,16 @@
 
   <!-- Hero Section -->
   <section id="home" class="hero">
-    <div class="hero-content">
-      <div class="hero-badge reveal">
-        <span class="badge-dot"></span>
-        <span>Open to Opportunities</span>
+    <div class="hero-content reveal">
+      <div class="hero-title-group">
+        <h1 class="hero-title">MANIKANDAPRABU VK</h1>
+        <div class="hero-subtitle">AI & DS Engineer</div>
       </div>
-      <h1 class="hero-title reveal">
-        <span class="hero-greeting">Hello, I'm</span>
-        <span class="hero-name">Manikandaprabu<span class="accent">.</span></span>
-      </h1>
-      <div class="hero-roles reveal">
-        <span class="role-prefix">I build </span>
-        <span class="typewriter" id="typewriter"></span>
-        <span class="cursor">|</span>
-      </div>
-      <p class="hero-desc reveal">
-        B.Tech AI & Data Science student at Dr. N.G.P Institute of Technology, Coimbatore — 
-        crafting intelligent systems that bridge the gap between raw data and real-world decisions.
+      <p class="hero-desc">
+        MANIKANDAPRABU VK IS AN ARTIFICIAL INTELLIGENCE & DATA SCIENCE ENGINEER DEDICATED TO CREATING INTELLIGENT DIGITAL SYSTEMS THAT BLEND DATA PIPELINES, MACHINE LEARNING, AND WEB TECHNOLOGY TO CRAFT INTERACTIVE USER JOURNEYS.
       </p>
-      <div class="hero-actions reveal">
-        <a href="#projects" class="btn btn-primary" id="hero-projects-btn">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-          View Projects
-        </a>
-        <a href="mailto:manikandaprabuvk@gmail.com" class="btn btn-secondary" id="hero-contact-btn">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-          Get In Touch
-        </a>
-      </div>
-      <div class="hero-stats reveal">
-        <div class="stat">
-          <span class="stat-num" data-target="6">0</span>
-          <span class="stat-label">Projects</span>
-        </div>
-        <div class="stat-divider"></div>
-        <div class="stat">
-          <span class="stat-num" data-target="3">0</span>
-          <span class="stat-label">Internships</span>
-        </div>
-        <div class="stat-divider"></div>
-        <div class="stat">
-          <span class="stat-num" data-target="7">0</span>
-          <span class="stat-label">Tech Stacks</span>
-        </div>
-      </div>
-    </div>
-    <div class="hero-visual reveal">
-      <div class="hero-avatar-wrapper">
-        <div class="avatar-ring ring-1"></div>
-        <div class="avatar-ring ring-2"></div>
-        <div class="avatar-ring ring-3"></div>
-        <div class="avatar-orb">
-          <div class="avatar-initials">MK</div>
-        </div>
-        <div class="floating-tag tag-1">
-          <span class="tag-icon">🤖</span> ML Engineer
-        </div>
-        <div class="floating-tag tag-2">
-          <span class="tag-icon">📊</span> Data Analyst
-        </div>
-        <div class="floating-tag tag-3">
-          <span class="tag-icon">⚡</span> Full Stack
-        </div>
-        <div class="floating-tag tag-4">
-          <span class="tag-icon">🏆</span> 3rd Prize Winner
-        </div>
+      <div class="hero-cta-wrapper">
+        <a href="#projects" class="hero-cta-btn">VIEW PROJECTS</a>
       </div>
     </div>
     <div class="scroll-indicator">
@@ -144,7 +96,7 @@
           <p class="about-body">
             My work spans across machine learning, data engineering, and software development. 
             I'm a quick learner who thrives in collaborative environments and has been recognized 
-            with a <strong>3rd Prize</strong> in a project competition judged by Microsoft professionals.
+            has been recognized with a <strong>3rd Prize</strong> for my Stock Price Prediction project in a competition judged by Microsoft professionals.
           </p>
           <div class="about-details">
             <div class="detail-item">
@@ -182,7 +134,7 @@
         <div class="about-education reveal">
           <h3 class="edu-title">Education</h3>
           <div class="edu-card">
-            <div class="edu-icon">🎓</div>
+            <div class="edu-icon"><svg width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c0 2 2 3 6 3s6-1 6-3v-5"/></svg></div>
             <div class="edu-info">
               <h4>B.Tech — AI & Data Science</h4>
               <p class="edu-inst">Dr. N.G.P Institute of Technology, Coimbatore</p>
@@ -196,7 +148,7 @@
             </div>
           </div>
           <div class="edu-card">
-            <div class="edu-icon">📚</div>
+            <div class="edu-icon"><svg width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2zM22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></div>
             <div class="edu-info">
               <h4>Senior Secondary (XII) — Science</h4>
               <p class="edu-inst">National Model Secondary School, Coimbatore</p>
@@ -206,14 +158,14 @@
           <div class="certifications">
             <h3 class="edu-title">Certifications</h3>
             <div class="cert-item">
-              <div class="cert-icon">📊</div>
+              <div class="cert-icon"><svg width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></div>
               <div>
                 <p class="cert-name">Power BI for Beginners</p>
                 <p class="cert-org">Simplilearn (Virtual) — Sep 2025</p>
               </div>
             </div>
             <div class="cert-item">
-              <div class="cert-icon">🐍</div>
+              <div class="cert-icon"><svg width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></div>
               <div>
                 <p class="cert-name">Python Bootcamp</p>
                 <p class="cert-org">Udemy (Virtual) — Nov 2023</p>
@@ -235,7 +187,7 @@
       <div class="skills-grid">
         <div class="skill-category reveal" id="skill-languages">
           <div class="skill-cat-header">
-            <span class="skill-cat-icon">💻</span>
+            <span class="skill-cat-icon"><svg width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="2" y1="20" x2="22" y2="20"/><line x1="12" y1="20" x2="12" y2="17"/></svg></span>
             <h3>Languages</h3>
           </div>
           <div class="skill-tags">
@@ -247,7 +199,7 @@
         </div>
         <div class="skill-category reveal" id="skill-ml">
           <div class="skill-cat-header">
-            <span class="skill-cat-icon">🤖</span>
+            <span class="skill-cat-icon"><svg width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="15" x2="23" y2="15"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="15" x2="4" y2="15"/></svg></span>
             <h3>ML / AI</h3>
           </div>
           <div class="skill-tags">
@@ -263,7 +215,7 @@
         </div>
         <div class="skill-category reveal" id="skill-data">
           <div class="skill-cat-header">
-            <span class="skill-cat-icon">📊</span>
+            <span class="skill-cat-icon"><svg width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/><path d="M3 12c0 1.66 4 3 9 3s9-1.34 9-3"/></svg></span>
             <h3>Data Science</h3>
           </div>
           <div class="skill-tags">
@@ -277,7 +229,7 @@
         </div>
         <div class="skill-category reveal" id="skill-viz">
           <div class="skill-cat-header">
-            <span class="skill-cat-icon">📈</span>
+            <span class="skill-cat-icon"><svg width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg></span>
             <h3>Visualization</h3>
           </div>
           <div class="skill-tags">
@@ -289,7 +241,7 @@
         </div>
         <div class="skill-category reveal" id="skill-backend">
           <div class="skill-cat-header">
-            <span class="skill-cat-icon">⚙️</span>
+            <span class="skill-cat-icon"><svg width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"/><rect x="2" y="14" width="20" height="8" rx="2" ry="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg></span>
             <h3>Backend / DB</h3>
           </div>
           <div class="skill-tags">
@@ -302,20 +254,17 @@
         </div>
         <div class="skill-category reveal" id="skill-devops">
           <div class="skill-cat-header">
-            <span class="skill-cat-icon">🚀</span>
+            <span class="skill-cat-icon"><svg width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="M12 15l-3-3m0 0l-1.5-1.5a3 3 0 0 1-.82-1.92L6.5 4.5l8-1 8 8-1 8-4.08-.18a3 3 0 0 1-1.92-.82L12 15z"/></svg></span>
             <h3>DevOps</h3>
           </div>
           <div class="skill-tags">
-            <span class="skill-tag featured">Docker</span>
-            <span class="skill-tag">Kubernetes</span>
-            <span class="skill-tag">Gunicorn</span>
+            <span class="skill-tag">Docker</span>
             <span class="skill-tag">Git</span>
-            <span class="skill-tag">Maven</span>
           </div>
         </div>
         <div class="skill-category reveal" id="skill-frontend">
           <div class="skill-cat-header">
-            <span class="skill-cat-icon">🎨</span>
+            <span class="skill-cat-icon"><svg width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 14.7255 3.09032 17.1962 4.85857 19C5.35843 19.5 5.25848 20.5 4.85857 21C4.45866 21.5 3.5 22 3.5 22C3.5 22 6 22 12 22Z"/><circle cx="7.5" cy="10.5" r="1.5" fill="currentColor"/><circle cx="11.5" cy="7.5" r="1.5" fill="currentColor"/><circle cx="16.5" cy="9.5" r="1.5" fill="currentColor"/><circle cx="15.5" cy="14.5" r="1.5" fill="currentColor"/></svg></span>
             <h3>Frontend</h3>
           </div>
           <div class="skill-tags">
@@ -327,7 +276,7 @@
         </div>
         <div class="skill-category reveal" id="skill-other">
           <div class="skill-cat-header">
-            <span class="skill-cat-icon">✨</span>
+            <span class="skill-cat-icon"><svg width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg></span>
             <h3>Other</h3>
           </div>
           <div class="skill-tags">
@@ -362,15 +311,20 @@
           <h3 class="project-title">MediCL</h3>
           <p class="project-subtitle">Smart Data Cleaning & Preprocessing Tool</p>
           <p class="project-desc">
-            Intelligent preprocessing pipeline for structured, semi-structured & unstructured datasets 
-            with HIPAA/GDPR PHI redaction, ML-based imputation, and 5-dimension quality scoring. 
-            Reduced manual effort by ~70%.
+            Intelligent, 100% local preprocessing platform for clinical datasets ensuring zero cloud exposure. 
+            Features automated PHI redaction (HIPAA/GDPR compliant), medical-aware cleaning with ICD-10 mapping 
+            and clinical spell correction, and 5-dimension quality scoring. Utilizes Random Forest for intelligent 
+            missing-value imputation across CSV, Excel, JSON, and XML formats, all wrapped in a premium dark glassmorphic UI.
           </p>
           <div class="project-tech">
             <span>Python</span><span>Flask</span><span>Random Forest</span>
-            <span>Docker</span><span>MongoDB</span><span>Kubernetes</span>
+            <span>Docker</span><span>MongoDB</span>
           </div>
           <div class="project-links">
+            <a href="https://github.com/mkpg/Smart-Data-Cleaning-and-Preprocessing-tool" target="_blank" rel="noopener noreferrer" class="project-link" id="medicl-github-link">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+              GitHub
+            </a>
             <a href="https://meddcl.onrender.com/" target="_blank" rel="noopener noreferrer" class="project-link" id="medicl-live-link" onclick="window.open('https://meddcl.onrender.com/','_blank'); return false;">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
               Live Demo
@@ -385,19 +339,25 @@
           <div class="project-meta">
             <span class="project-badge badge-ai">BiLSTM+XGBoost</span>
             <span class="project-badge badge-live">Live</span>
+            <span class="project-badge badge-award"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:3px; vertical-align:middle; display:inline-block;"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6M18 9h1.5a2.5 2.5 0 0 0 0-5H18M4 22h16M10 14.66V17c0 .55-.45 1-1 1H4v2h16v-2h-5c-.55 0-1-.45-1-1v-2.34M12 2a6 6 0 0 1 6 6v3.5c0 3.3-2.7 6-6 6s-6-2.7-6-6V8a6 6 0 0 1 6-6z"/></svg>3rd Prize</span>
           </div>
           <h3 class="project-title">QuantumTrade Pro</h3>
           <p class="project-subtitle">AI Stock Prediction Engine</p>
           <p class="project-desc">
-            Ensemble forecasting system combining BiLSTM & XGBoost for multi-horizon stock prediction. 
-            20+ technical indicators, Polygon.io real-time data, automated Buy/Sell/Hold signals, 
-            50–70% directional accuracy.
+            Premium ensemble forecasting system combining deep learning (BiLSTM) and tree-based (XGBoost) models for multi-horizon stock prediction. 
+            Integrates Polygon.io real-time market data APIs and engineered 20+ technical indicators to generate automated Buy/Sell/Hold signals 
+            with 50-70% directional accuracy. Engineered for scale and deployed as a containerized Docker application on Hugging Face Spaces. 
+            <strong>Won 3rd Prize</strong> in project competition.
           </p>
           <div class="project-tech">
             <span>BiLSTM</span><span>XGBoost</span><span>Flask</span>
             <span>Plotly</span><span>OAuth2</span><span>Docker</span>
           </div>
           <div class="project-links">
+            <a href="https://github.com/mkpg/Stock-Price-Prediction-using-XGBoost-and-LSTM-HYBRID-" target="_blank" rel="noopener noreferrer" class="project-link" id="quantum-github-link">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+              GitHub
+            </a>
             <a href="https://retroo00-quantumtrade-pro.hf.space/" target="_blank" rel="noopener noreferrer" class="project-link" id="quantum-live-link" onclick="window.open('https://retroo00-quantumtrade-pro.hf.space/','_blank'); return false;">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
               Live Demo
@@ -416,15 +376,20 @@
           <h3 class="project-title">Canteen OS</h3>
           <p class="project-subtitle">Automated Canteen Ordering System</p>
           <p class="project-desc">
-            Full-stack web app with user auth, menu ordering, payment processing, and real-time order tracking. 
-            Admin dashboard for centralized management, Flask-Mail notifications, 
-            token-based security, deployed with Gunicorn + Docker.
+            Comprehensive full-stack digital cafeteria platform built with Flask and MongoDB. Features secure token-based user authentication, 
+            dynamic menu browsing, seamless cart management, and real-time order state tracking (Preparing → Ready → Completed). 
+            Includes a dedicated admin dashboard for revenue analytics, user management, and order filtering, complete with 
+            Flask-Mail automated notifications and Dockerized deployment.
           </p>
           <div class="project-tech">
             <span>Flask</span><span>MongoDB</span><span>Docker</span>
-            <span>Gunicorn</span><span>Flask-Mail</span><span>HTML/CSS</span>
+            <span>Flask-Mail</span><span>HTML/CSS</span>
           </div>
           <div class="project-links">
+            <a href="https://github.com/mkpg/Canteen-Ordering-System-Prototype-2.0" target="_blank" rel="noopener noreferrer" class="project-link" id="canteen-github-link">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+              GitHub
+            </a>
             <a href="https://canteen-os.onrender.com/" target="_blank" rel="noopener noreferrer" class="project-link" id="canteen-live-link" onclick="window.open('https://canteen-os.onrender.com/','_blank'); return false;">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
               Live Demo
@@ -443,12 +408,13 @@
           <h3 class="project-title">FileOrganizer Pro</h3>
           <p class="project-subtitle">Desktop Automation Tool</p>
           <p class="project-desc">
-            JavaFX desktop app for automated recursive file sorting, duplicate detection, 
-            and category-based organization with hourly/daily/weekly scheduling via 
-            multithreading and cross-platform Maven builds.
+            High-performance Java desktop application engineered for automated recursive file sorting and organization. 
+            Built with a modern dark-themed JavaFX GUI and a built-in scheduler for hourly/daily/weekly runs. 
+            Leverages Java NIO.2 for secure file operations and implements multithreading to rapidly categorize thousands 
+            of files (Images, Documents, Code, Archives) into structured directories without blocking the UI thread.
           </p>
           <div class="project-tech">
-            <span>Java 17</span><span>JavaFX 21</span><span>Maven</span>
+            <span>Java 17</span><span>JavaFX 21</span>
             <span>NIO.2</span><span>Multithreading</span>
           </div>
           <div class="project-links">
@@ -470,9 +436,10 @@
           <h3 class="project-title">AutoML Selector</h3>
           <p class="project-subtitle">Auto ML Model Selector Middleware</p>
           <p class="project-desc">
-            AutoML middleware that auto-detects dataset types and selects optimal models 
-            for Classification, Regression & Time-Series tasks with comparative evaluation 
-            pipelines and real-time training visualization dashboards.
+            Intelligent web-based middleware that allows drag-and-drop dataset uploads and automatically detects the problem type 
+            (Classification, Regression, or Time-Series). The system trains and compares 10 distinct machine learning models in parallel 
+            (including XGBoost, SVM, and LSTM). Features real-time training progress updates via Server-Sent Events (SSE) and 
+            renders a beautiful interactive Chart.js comparison dashboard. Fully responsive for seamless cross-device mobile and PC access.
           </p>
           <div class="project-tech">
             <span>Python</span><span>Random Forest</span><span>XGBoost</span>
@@ -496,14 +463,14 @@
           <div class="project-number">06</div>
           <div class="project-meta">
             <span class="project-badge badge-bi">Power BI</span>
-            <span class="project-badge badge-award">🏆 3rd Prize</span>
           </div>
           <h3 class="project-title">Power BI Analytics</h3>
           <p class="project-subtitle">Customer Behavior & Ebola Analysis Dashboards</p>
           <p class="project-desc">
-            Two interactive dashboards: Customer churn & behavior analysis for a streaming platform 
-            (Netflix dataset), and Ebola outbreak visualization showing case spread & fatality trends. 
-            <strong>Won 3rd Prize</strong> judged by Microsoft guests.
+            Developed a suite of interactive dashboards targeting complex datasets. The <strong>Customer Behavior Analysis</strong> project 
+            evaluates streaming platform demographics, mapping age, gender, and subscription patterns to predict and visualize churn trends. 
+            The <strong>Ebola Analysis</strong> features an end-to-end pipeline that cleaned raw WHO 2014 outbreak datasets using Pandas, 
+            modeled relational schemas, and deployed dynamic DAX measures to track geographical case spread and fatality rates over time.
           </p>
           <div class="project-tech">
             <span>Power BI</span><span>DAX</span><span>EDA</span>
@@ -554,13 +521,12 @@
         <div class="timeline-item reveal" id="achievement-1">
           <div class="timeline-dot timeline-dot-gold"></div>
           <div class="timeline-content achievement-card">
-            <div class="achievement-trophy">🏆</div>
+            <div class="achievement-trophy"><svg width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6M18 9h1.5a2.5 2.5 0 0 0 0-5H18M4 22h16M10 14.66V17c0 .55-.45 1-1 1H4v2h16v-2h-5c-.55 0-1-.45-1-1v-2.34M12 2a6 6 0 0 1 6 6v3.5c0 3.3-2.7 6-6 6s-6-2.7-6-6V8a6 6 0 0 1 6-6z"/></svg></div>
             <div class="timeline-date">2025</div>
-            <h3 class="timeline-role">3rd Prize — Project Presentation Competition</h3>
-            <p class="timeline-company">Judged by industry professionals including Microsoft Bengaluru guests</p>
+            <h3 class="timeline-role">3rd Prize - Project Presentation Competition</h3>
+            <p class="timeline-company">Stock Price Prediction Project (Judged by Microsoft guests)</p>
             <p class="achievement-desc">
-              Secured 3rd place in a competitive project showcase, demonstrating technical excellence 
-              and presentation skills before industry experts.
+              Secured 3rd place in a competitive project showcase for the QuantumTrade Pro (Stock Price Prediction) system, demonstrating technical excellence in ML and presentation skills before industry experts.
             </p>
           </div>
         </div>
@@ -588,71 +554,40 @@
         <span class="section-tag">Get In Touch</span>
         <h2 class="section-title">Let's <span class="accent">Connect</span></h2>
       </div>
-      <div class="contact-grid">
-        <div class="contact-left reveal">
-          <p class="contact-intro">
-            I'm currently open to internship opportunities, full-time roles, and exciting collaborations. 
-            Whether you have a question, a project idea, or just want to say hi — my inbox is always open!
-          </p>
-          <div class="contact-cards">
-            <a href="mailto:manikandaprabuvk@gmail.com" class="contact-card" id="contact-email">
-              <div class="contact-card-icon">📧</div>
-              <div>
-                <p class="contact-card-label">Email</p>
-                <p class="contact-card-value">manikandaprabuvk@gmail.com</p>
-              </div>
-            </a>
-            <a href="tel:+919942361166" class="contact-card" id="contact-phone">
-              <div class="contact-card-icon">📞</div>
-              <div>
-                <p class="contact-card-label">Phone</p>
-                <p class="contact-card-value">+91 9942361166</p>
-              </div>
-            </a>
-            <div class="contact-card" id="contact-location">
-              <div class="contact-card-icon">📍</div>
-              <div>
-                <p class="contact-card-label">Location</p>
-                <p class="contact-card-value">Coimbatore, Tamil Nadu</p>
-              </div>
+      <div class="contact-grid reveal">
+        <p class="contact-intro">
+          I'm currently open to internship opportunities, full-time roles, and exciting collaborations. 
+          Whether you have a question, a project idea, or just want to say hi — my inbox is always open!
+        </p>
+        <div class="contact-cards">
+          <a href="mailto:manikandaprabuvk@gmail.com" class="contact-card" id="contact-email">
+            <div class="contact-card-icon"><svg width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
+            <div>
+              <p class="contact-card-label">Email</p>
+              <p class="contact-card-value">manikandaprabuvk@gmail.com</p>
+            </div>
+          </a>
+          <a href="tel:+919942361166" class="contact-card" id="contact-phone">
+            <div class="contact-card-icon"><svg width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13.6a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 3h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 10a16 16 0 0 0 6 6l.27-.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21 18v3"/></svg></div>
+            <div>
+              <p class="contact-card-label">Phone</p>
+              <p class="contact-card-value">+91 9942361166</p>
+            </div>
+          </a>
+          <div class="contact-card" id="contact-location">
+            <div class="contact-card-icon"><svg width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+            <div>
+              <p class="contact-card-label">Location</p>
+              <p class="contact-card-value">Coimbatore, Tamil Nadu</p>
             </div>
           </div>
-          <div class="contact-social">
-            <a href="https://linkedin.com/in/manikandaprabhuvk" target="_blank" rel="noopener" class="social-btn" id="contact-linkedin">LinkedIn</a>
-            <a href="https://github.com/mkpg" target="_blank" rel="noopener" class="social-btn" id="contact-github">GitHub</a>
-            <a href="https://leetcode.com/Retr0000" target="_blank" rel="noopener" class="social-btn" id="contact-leetcode">LeetCode</a>
-          </div>
         </div>
-        <div class="contact-right reveal">
-          <!-- Real email via FormSubmit.co — sends directly to manikandaprabuvk@gmail.com -->
-          <form class="contact-form" id="contact-form" onsubmit="handleFormSubmit(event)">
-            <input type="hidden" name="_subject" value="New Portfolio Contact Message!" />
-            <input type="hidden" name="_captcha" value="false" />
-            <input type="hidden" name="_template" value="table" />
-            <div class="form-group">
-              <label for="form-name">Your Name</label>
-              <input type="text" id="form-name" name="name" placeholder="John Doe" required />
-            </div>
-            <div class="form-group">
-              <label for="form-email">Your Email</label>
-              <input type="email" id="form-email" name="email" placeholder="john@company.com" required />
-            </div>
-            <div class="form-group">
-              <label for="form-subject">Subject</label>
-              <input type="text" id="form-subject" name="subject" placeholder="Job Opportunity / Collaboration" />
-            </div>
-            <div class="form-group">
-              <label for="form-message">Message</label>
-              <textarea id="form-message" name="message" rows="5" placeholder="Tell me about the opportunity..." required></textarea>
-            </div>
-            <button type="submit" class="btn btn-primary btn-full" id="form-submit-btn">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-              Send Message
-            </button>
-            <div class="form-success" id="form-success"></div>
-            <div class="form-error" id="form-error"></div>
-          </form>
+        <div class="contact-social">
+          <a href="https://linkedin.com/in/manikandaprabhuvk" target="_blank" rel="noopener" class="social-btn" id="contact-linkedin">LinkedIn</a>
+          <a href="https://github.com/mkpg" target="_blank" rel="noopener" class="social-btn" id="contact-github">GitHub</a>
+          <a href="https://leetcode.com/Retr0000" target="_blank" rel="noopener" class="social-btn" id="contact-leetcode">LeetCode</a>
         </div>
+      </div>
       </div>
     </div>
   </section>
@@ -661,7 +596,7 @@
   <footer class="footer">
     <div class="container">
       <div class="footer-top">
-        <a href="#home" class="footer-logo">MK<span class="accent">.</span></a>
+        <a href="#home" class="footer-logo">MKP<span class="accent">.</span></a>
         <p class="footer-tagline">Building intelligent systems, one commit at a time.</p>
       </div>
       <div class="footer-links">
@@ -678,6 +613,7 @@
     </div>
   </footer>
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
