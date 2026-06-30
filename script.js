@@ -255,8 +255,8 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
       const y = e.clientY - rect.top;
       const midX = rect.width / 2;
       const midY = rect.height / 2;
-      const rotX = ((y - midY) / midY) * -3;
-      const rotY = ((x - midX) / midX) * 3;
+      const rotX = ((y - midY) / midY) * -1.5;
+      const rotY = ((x - midX) / midX) * 1.5;
       card.style.transform = `perspective(1000px) rotateX(${rotX}deg) rotateY(${rotY}deg)`;
     });
     card.addEventListener('mouseleave', () => {
@@ -542,7 +542,7 @@ console.log(
   }, { passive: true });
 
   // ── Magnetic Attraction Effect ──
-  const magnetics = document.querySelectorAll('a, button, .project-card, .contact-card, .social-btn');
+  const magnetics = document.querySelectorAll('a, button, .contact-card, .social-btn');
   
   magnetics.forEach(el => {
     el.addEventListener('mouseenter', () => {
